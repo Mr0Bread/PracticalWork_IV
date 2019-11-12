@@ -8,8 +8,8 @@ int askLetter();
 int askRow();
 int askLength();
 bool askBool(string str);
-void placeShip(bool array[10][10], bool isHorizontal, const int length, const int columnNumber, const int rowNumber);
-bool checkPosition(bool array[10][10], bool isHorizontal, const int length, const int columnNumber, const int rowNumber);
+void placeShip(bool array[10][10], bool isHorizontal, int length, const int columnNumber, const int rowNumber);
+bool checkPosition(bool array[10][10], bool isHorizontal, int length, const int columnNumber, const int rowNumber);
 void printArray(bool array[10][10], const int SIZE);
 bool counterShips(int const length);
 void restartGame(bool array[10][10]);
@@ -18,6 +18,7 @@ int shipCounter1 = 0;
 int shipCounter2 = 0;
 int shipCounter3 = 0;
 int shipCounter4 = 0;
+int chooseMethod;
 
 int main()
 {
@@ -37,7 +38,12 @@ int main()
 			if (!counterLimit)
 				continue;
 
-			bool isHorizontal = askBool("Placed horizontally? 1 for yes and 0 for no");
+			bool isHorizontal;
+			if (length != 1)
+				isHorizontal = askBool("Placed horizontally? 1 for yes and 0 for no");
+			else
+				isHorizontal = true;
+
 			bool position = checkPosition(array, isHorizontal, length, columnNumber, rowNumber);	
 
 			if (position)
@@ -179,34 +185,52 @@ bool askBool(string str)
 	}
 }
 
-bool checkPosition(bool array[10][10], bool isHorizontal, const int length, const int columnNumber, const int rowNumber)
+bool checkPosition(bool array[10][10], bool isHorizontal, int length, const int columnNumber, const int rowNumber)
 {
-	if ((isHorizontal && columnNumber + length < 10)
-		|| (!isHorizontal && rowNumber + length < 10)
-		|| (length == 1 && columnNumber < 10 && rowNumber < 10))
+	length -= 1;
+	if (isHorizontal && columnNumber + length < 10)
 	{
-		if (isHorizontal)
+		for (int i = 0; i <= length; i++)
 		{
-			for (int i = 0; i < length; i++)
-			{
-				if (array[rowNumber][columnNumber + i] != false)
-					return false;
-			}
-			return true;
+			if (array[rowNumber][columnNumber + i] != false)
+				return false;
 		}
-		else
-		{
-			for (int i = 0; i < length; i++)
-			{
-				if (array[rowNumber + i][columnNumber] != false)
-					return false;
-			}
-			return true;
-		}
+		chooseMethod = 1;
+		return true;
 	}
-
+	else if (!isHorizontal && rowNumber + length < 10)
+	{
+		for (int i = 0; i < length; i++)
+		{
+			if (array[rowNumber + i][columnNumber] != false)
+				return false;
+		}
+		chooseMethod = 2;
+		return true;
+	}
+	else if (isHorizontal && columnNumber - length > -1)
+	{
+		for (int i = 0; i < length; i++)
+		{
+			if (array[rowNumber][columnNumber - i] != false)
+				return false;
+		}
+		chooseMethod = 3;
+		return true;
+	}
+	else if (!isHorizontal && rowNumber - length > -1)
+	{
+		for (int i = 0; i < length; i++)
+		{
+			if (array[rowNumber - i][columnNumber] != false)
+				return false;
+		}
+		chooseMethod = 4;
+		return true;
+	}
 	else
 		return false;
+	
 }
 
 bool counterShips(int const length)
@@ -238,21 +262,29 @@ bool counterShips(int const length)
 	}
 }
 
-void placeShip(bool array[10][10], bool isHorizontal, const int length, const int columnNumber, const int rowNumber)
+void placeShip(bool array[10][10], bool isHorizontal, int length, const int columnNumber, const int rowNumber)
 {
-	if (isHorizontal)
+	length -= 1;
+	switch (chooseMethod)
 	{
-		for (int i = 0; i < length; i++)
-		{
+	case 1:
+		for (int i = 0; i <= length; i++)
 			array[rowNumber][columnNumber + i] = true;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < length; i++)
-		{
+		break;
+	case 2:
+		for (int i = 0; i <= length; i++)
 			array[rowNumber + i][columnNumber] = true;
-		}
+		break;
+	case 3:
+		for (int i = 0; i <= length; i++)
+			array[rowNumber][columnNumber - i] = true;
+		break;
+	case 4:
+		for (int i = 0; i <= length; i++)
+			array[rowNumber - i][columnNumber] = true;
+		break;
+	default:
+		cout << "SOMETHING WRONG! I REPEAT!!! SOMETHING DOESN'T WORK!!!" << endl;
 	}
 }
 
@@ -283,8 +315,6 @@ void printArray(bool array[10][10], const int SIZE)
 		}
 		else
 			arrayOfCoords[i] = "10";
-				
-		
 	}
 
 	cout << "\t";
