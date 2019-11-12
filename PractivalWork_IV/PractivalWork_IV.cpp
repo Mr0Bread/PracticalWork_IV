@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#define DEBUG
 
 using namespace std;
 
@@ -283,8 +284,10 @@ void placeShip(bool array[10][10], bool isHorizontal, int length, const int colu
 		for (int i = 0; i <= length; i++)
 			array[rowNumber - i][columnNumber] = true;
 		break;
+#ifdef DEBUG
 	default:
 		cout << "SOMETHING WRONG! I REPEAT!!! SOMETHING DOESN'T WORK!!!" << endl;
+#endif // DEBUG
 	}
 }
 
